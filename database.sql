@@ -529,3 +529,191 @@ mysql> SELECT user_id from registrations group by user_id having count(*)>1;
 Empty set (0.00 sec)
 
 mysql> ^A     
+mysql> select event_id ,count(resource_url) from resources group by(event_id);
++----------+---------------------+
+| event_id | count(resource_url) |
++----------+---------------------+
+|        1 |                   1 |
+|        2 |                   1 |
+|        3 |                   1 |
++----------+---------------------+
+3 rows in set (0.00 sec)
+
+mysql> select event_id ,count(resource_url) from resources group by event_id;
++----------+---------------------+
+| event_id | count(resource_url) |
++----------+---------------------+
+|        1 |                   1 |
+|        2 |                   1 |
+|        3 |                   1 |
++----------+---------------------+
+3 rows in set (0.00 sec)
+
+mysql> select city,count(distinct user_id) from users;
+ERROR 1140 (42000): In aggregated query without GROUP BY, expression #1 of SELECT list contains nonaggregated column 'clg.users.city'; this is incompatible with sql_mode=only_full_group_by
+mysql> select city,count(distinct user_id) from users order by city;
+ERROR 1140 (42000): In aggregated query without GROUP BY, expression #1 of SELECT list contains nonaggregated column 'clg.users.city'; this is incompatible with sql_mode=only_full_group_by
+mysql> select city,count(distinct user_id) from users group by city order by ususer_id desc;
+ERROR 1054 (42S22): Unknown column 'ususer_id' in 'order clause'
+mysql> select city,count(distinct user_id) from users group by city order by user_id desc;
+ERROR 1055 (42000): Expression #1 of ORDER BY clause is not in GROUP BY clause and contains nonaggregated column 'clg.users.user_id' which is not functionally dependent on columns in GROUP BY clause; this is incompatible with sql_mode=only_full_group_by
+mysql> select city,count(distinct user_id) from users group by city order by user_id desc;
+ERROR 1055 (42000): Expression #1 of ORDER BY clause is not in GROUP BY clause and contains nonaggregated column 'clg.users.user_id' which is not functionally dependent on columns in GROUP BY clause; this is incompatible with sql_mode=only_full_group_by
+mysql> select city,count(distinct user_id) from users group by city order by count(user_id) desc;
++-------------+-------------------------+
+| city        | count(distinct user_id) |
++-------------+-------------------------+
+| Los Angeles |                       2 |
+| New York    |                       2 |
+| Chicago     |                       1 |
+| hyd         |                       1 |
++-------------+-------------------------+
+4 rows in set (0.01 sec)
+
+mysql> SELECT
+    ->     city,
+    ->     COUNT(DISTINCT user_id) AS user_count
+    -> FROM users
+    -> GROUP BY city
+    -> ORDER BY user_count DESC limit 5;
++-------------+------------+
+| city        | user_count |
++-------------+------------+
+| Los Angeles |          2 |
+| New York    |          2 |
+| Chicago     |          1 |
+| hyd         |          1 |
++-------------+------------+
+4 rows in set (0.00 sec)
+
+mysql> select city,count (distinct user_id) as userc from users group by city order by userc desc limit 5;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'distinct user_id) as userc from users group by city order by userc desc limit 5' at line 1
+mysql> select city,count(distinct user_id) as userc from users group by city order by userc desc limit 5;
++-------------+-------+
+| city        | userc |
++-------------+-------+
+| Los Angeles |     2 |
+| New York    |     2 |
+| Chicago     |     1 |
+| hyd         |     1 |
++-------------+-------+
+4 rows in set (0.00 sec)
+
+mysql> select user_id,rating,comments,event_id from feedback where rating<3 groyp by user_id;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'groyp by user_id' at line 1
+mysql> select user_id,rating,comments,event_id from feedback where rating<3;
+Empty set (0.00 sec)
+
+mysql> select f.user_id,f.rating,f.comments,f.event_id,e.title from feedback f join events e on f.event_id=e.event_id where rating<3;
+Empty set (0.00 sec)
+
+mysql> select f.user_id,f.rating,f.comments,f.event_id,e.title from feedback f join events e on f.event_id=e.event_id where f.rating<3;
+Empty set (0.00 sec)
+
+mysql> select f.user_id,f.rating,f.comments,f.event_id,e.title from feedback f join events e on f.event_id=e.event_id where rating<3;^A^C
+mysql> SELECT
+    ->     e.event_id,
+    ->     e.title,
+    ->     COUNT(s.session_id) AS session_count
+    -> FROM events e
+    -> LEFT JOIN sessions s
+    ->     ON e.event_id = s.event_id
+    -> WHERE e.status = 'upcoming'
+    -> GROUP BY e.event_id, e.title;
++----------+-------------------------------+---------------+
+| event_id | title                         | session_count |
++----------+-------------------------------+---------------+
+|        1 | Tech Innovators Meetup        |             2 |
+|        3 | Frontend Development Bootcamp |             1 |
++----------+-------------------------------+---------------+
+2 rows in set (0.00 sec)
+
+mysql> SELECT
+    ->     e.event_id,
+    ->     e.title,
+    ->     COUNT(s.session_id) AS peak_sessions
+    -> FROM events e
+    -> JOIN sessions s
+    ->     ON e.event_id = s.event_id
+    -> WHERE s.start_time BETWEEN '10:00:00' AND '12:00:00'
+    -> GROUP BY e.event_id;
+Empty set, 8 warnings (0.01 sec)
+
+mysql> SELECT
+    -> GROUP BY e.event_id, e.title;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'GROUP BY e.event_id, e.title' at line 2
+mysql> SELECT
+    ->     e.event_id,e.title,count(s.session_id) from events e join sessions s on e.event_id=s.event_id
+    -> WHERE s.start_time BETWEEN '10:00:00' AND '12:00:00'
+    -> GROUP BY e.event_id,e.title;
+Empty set, 8 warnings (0.00 sec)
+
+mysql> SELECT
+    ->     e.event_id,e.title,count(s.session_id) from events e join sessions s on e.event_id=s.event_id
+    -> WHERE time(s.start_time) BETWEEN '10:00:00' AND '12:00:00'
+    -> GROUP BY e.event_id,e.title;
++----------+-------------------------------+---------------------+
+| event_id | title                         | count(s.session_id) |
++----------+-------------------------------+---------------------+
+|        1 | Tech Innovators Meetup        |                   2 |
+|        3 | Frontend Development Bootcamp |                   1 |
++----------+-------------------------------+---------------------+
+2 rows in set (0.01 sec)
+
+mysql> select count(user_id) from feedback group by (user)id order by count(*);
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'id order by count(*)' at line 1
+mysql> select user_id from feedback group by (user)id order by count(*);
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'id order by count(*)' at line 1
+ ysql> select user_id from feedback group by (user_id) order by count(user_id);
++---------+
+| user_id |
++---------+
+|       2 |
+|       3 |
+|       4 |
++---------+
+3 rows in set (0.00 sec)
+
+mysql> select user_id from feedback group by (user_id) order by count(*);
++---------+
+| user_id |
++---------+
+|       2 |
+|       3 |
+|       4 |
++---------+
+3 rows in set (0.00 sec)
+
+mysql> select user_id from feedback group by (user_id) order by count(*) limit 5;
++---------+
+| user_id |
++---------+
+|       2 |
+|       3 |
+|       4 |
++---------+
+3 rows in set (0.00 sec)
+
+mysql> select user_id,event_id from registrations group by user_id,event_id havinf count(*)>1;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'havinf count(*)>1' at line 1
+mysql> select user_id,event_id from registrations group by user_id,event_id having count(*)>1;
+Empty set (0.00 sec)
+
+mysql> select event_id from sessions where start_time and end_time not unique;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'unique' at line 1
+mysql> select event_id from sessions group by  start_time ,end_time having count(*)>1;
+ERROR 1055 (42000): Expression #1 of SELECT list is not in GROUP BY clause and contains nonaggregated column 'clg.sessions.event_id' which is not functionally dependent on columns in GROUP BY clause; this is incompatible with sql_mode=only_full_group_by
+mysql> select event_id from sessions group by start_time ,end_time having count(*)>1;
+ERROR 1055 (42000): Expression #1 of SELECT list is not in GROUP BY clause and contains nonaggregated column 'clg.sessions.event_id' which is not functionally dependent on columns in GROUP BY clause; this is incompatible with sql_mode=only_full_group_by
+mysql> SELECT
+    ->     event_id,
+    ->     start_time,
+    ->     end_time,
+    ->     COUNT(*) AS cnt
+    -> FROM sessions
+    -> GROUP BY event_id, start_time, end_time
+    -> HAVING COUNT(*) > 1;
+Empty set (0.00 sec)
+
+mysql>
+
