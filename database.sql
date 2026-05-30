@@ -230,3 +230,302 @@ UNLOCK TABLES;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
 -- Dump completed on 2026-05-29 15:31:34
+
+
+
+Enter password: ****
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 13
+Server version: 8.0.46 MySQL Community Server - GPL
+
+Copyright (c) 2000, 2026, Oracle and/or its affiliates.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+mysql> select * from users
+    -> ;
+ERROR 1046 (3D000): No database selected
+mysql> use clg;
+Database changed
+mysql> select * from users;
++---------+---------------+---------------------+-------------+-------------------+
+| user_id | full_name     | email               | city        | registration_date |
++---------+---------------+---------------------+-------------+-------------------+
+|       1 | Alice Johnson | alice@example.com   | New York    | 2024-12-01        |
+|       2 | Bob Smith     | bob@example.com     | Los Angeles | 2024-12-05        |
+|       3 | Charlie Lee   | charlie@example.com | Chicago     | 2024-12-10        |
+|       4 | Diana King    | diana@example.com   | New York    | 2025-01-15        |
+|       5 | Ethan Hunt    | ethan@example.com   | Los Angeles | 2025-02-01        |
++---------+---------------+---------------------+-------------+-------------------+
+5 rows in set (0.00 sec)
+
+mysql> select * from users where registration_date between '2026-05-01' and '2026-05-30';
+Empty set (0.01 sec)
+
+mysql> select * from users where registration_date >=now() interval 30 days;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'interval 30 days' at line 1
+mysql> select * from users where registration_date >=now() -interval 30 days;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'days' at line 1
+mysql> select * from users where registration_date >=now() - interval 30 days;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'days' at line 1
+mysql> select * from users where registration_date >=now() - interval 30 day;
+Empty set (0.01 sec)
+
+mysql> insert into users values(6,'chikiitha','chik@example.com','hyd','2026-05-22';
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+mysql> insert into users values(6,'chikiitha','chik@example.com','hyd','2026-05-22');
+Query OK, 1 row affected (0.01 sec)
+
+mysql> select * from users where registration_date >=now() - interval 30 day;
++---------+-----------+------------------+------+-------------------+
+| user_id | full_name | email            | city | registration_date |
++---------+-----------+------------------+------+-------------------+
+|       6 | chikiitha | chik@example.com | hyd  | 2026-05-22        |
++---------+-----------+------------------+------+-------------------+
+1 row in set (0.00 sec)
+
+mysql> select * from order  by registration_date;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'order  by registration_date' at line 1
+mysql> select * from order by registration_date;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'order by registration_date' at line 1
+mysql> select * from users order by registration_date;
++---------+---------------+---------------------+-------------+-------------------+
+| user_id | full_name     | email               | city        | registration_date |
++---------+---------------+---------------------+-------------+-------------------+
+|       1 | Alice Johnson | alice@example.com   | New York    | 2024-12-01        |
+|       2 | Bob Smith     | bob@example.com     | Los Angeles | 2024-12-05        |
+|       3 | Charlie Lee   | charlie@example.com | Chicago     | 2024-12-10        |
+|       4 | Diana King    | diana@example.com   | New York    | 2025-01-15        |
+|       5 | Ethan Hunt    | ethan@example.com   | Los Angeles | 2025-02-01        |
+|       6 | chikiitha     | chik@example.com    | hyd         | 2026-05-22        |
++---------+---------------+---------------------+-------------+-------------------+
+6 rows in set (0.00 sec)
+
+mysql> select * from users order by registration_date desc;
++---------+---------------+---------------------+-------------+-------------------+
+| user_id | full_name     | email               | city        | registration_date |
++---------+---------------+---------------------+-------------+-------------------+
+|       6 | chikiitha     | chik@example.com    | hyd         | 2026-05-22        |
+|       5 | Ethan Hunt    | ethan@example.com   | Los Angeles | 2025-02-01        |
+|       4 | Diana King    | diana@example.com   | New York    | 2025-01-15        |
+|       3 | Charlie Lee   | charlie@example.com | Chicago     | 2024-12-10        |
+|       2 | Bob Smith     | bob@example.com     | Los Angeles | 2024-12-05        |
+|       1 | Alice Johnson | alice@example.com   | New York    | 2024-12-01        |
++---------+---------------+---------------------+-------------+-------------------+
+6 rows in set (0.00 sec)
+
+mysql> select count(city) from users group by city;
++-------------+
+| count(city) |
++-------------+
+|           2 |
+|           2 |
+|           1 |
+|           1 |
++-------------+
+4 rows in set (0.01 sec)
+
+mysql> select count(city),city from users group by city;
++-------------+-------------+
+| count(city) | city        |
++-------------+-------------+
+|           2 | New York    |
+|           2 | Los Angeles |
+|           1 | Chicago     |
+|           1 | hyd         |
++-------------+-------------+
+4 rows in set (0.00 sec)
+
+mysql> select city from users like 'n%';
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'like 'n%'' at line 1
+mysql> select city from users where city like 'n%';
++----------+
+| city     |
++----------+
+| New York |
+| New York |
++----------+
+2 rows in set (0.00 sec)
+
+mysql> select city from users where count(city)>5;
+ERROR 1111 (HY000): Invalid use of group function
+mysql> select * from users;
++---------+---------------+---------------------+-------------+-------------------+
+| user_id | full_name     | email               | city        | registration_date |
++---------+---------------+---------------------+-------------+-------------------+
+|       1 | Alice Johnson | alice@example.com   | New York    | 2024-12-01        |
+|       2 | Bob Smith     | bob@example.com     | Los Angeles | 2024-12-05        |
+|       3 | Charlie Lee   | charlie@example.com | Chicago     | 2024-12-10        |
+|       4 | Diana King    | diana@example.com   | New York    | 2025-01-15        |
+|       5 | Ethan Hunt    | ethan@example.com   | Los Angeles | 2025-02-01        |
+|       6 | chikiitha     | chik@example.com    | hyd         | 2026-05-22        |
++---------+---------------+---------------------+-------------+-------------------+
+6 rows in set (0.00 sec)
+
+mysql> select city from users where count(*)>5;
+ERROR 1111 (HY000): Invalid use of group function
+mysql> select city from users group by city having count(*).5;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '.5' at line 1
+mysql> select city from users group by city having count(*)>5;
+Empty set (0.00 sec)
+
+mysql> select city from users group by city having count(*)>=2;
++-------------+
+| city        |
++-------------+
+| New York    |
+| Los Angeles |
++-------------+
+2 rows in set (0.00 sec)
+
+mysql> select full_name from users where full_name like 'a%';
++---------------+
+| full_name     |
++---------------+
+| Alice Johnson |
++---------------+
+1 row in set (0.00 sec)
+
+mysql> select city from users where city not unique;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'unique' at line 1
+mysql> select city from users group by city having count(*)=1;
++---------+
+| city    |
++---------+
+| Chicago |
+| hyd     |
++---------+
+2 rows in set (0.00 sec)
+
+mysql> select * from users order by registation_date desc limit 1;
+ERROR 1054 (42S22): Unknown column 'registation_date' in 'order clause'
+mysql> select * from users order by registration_date limit 1;
++---------+---------------+-------------------+----------+-------------------+
+| user_id | full_name     | email             | city     | registration_date |
++---------+---------------+-------------------+----------+-------------------+
+|       1 | Alice Johnson | alice@example.com | New York | 2024-12-01        |
++---------+---------------+-------------------+----------+-------------------+
+1 row in set (0.01 sec)
+
+mysql> select * from users group by registation_date order by month;
+ERROR 1054 (42S22): Unknown column 'registation_date' in 'group statement'
+mysql> select * from users group by registration_date order by month;
+ERROR 1054 (42S22): Unknown column 'month' in 'order clause'
+mysql> SELECT MONTH(registration_date) AS month,
+    ->        COUNT(*) AS user_count
+    -> FROM users
+    -> GROUP BY MONTH(registration_date)
+    -> ORDER BY month;
++-------+------------+
+| month | user_count |
++-------+------------+
+|     1 |          1 |
+|     2 |          1 |
+|     5 |          1 |
+|    12 |          3 |
++-------+------------+
+4 rows in set (0.00 sec)
+
+mysql> select * from users group by registration_date order by month;
+ERROR 1054 (42S22): Unknown column 'month' in 'order clause'
+mysql> select u.users_id,u.full_name,e.event_id,e.title from users u join events e on u.user_id=e.organizer_id where e.status='upcoming' ,u.city=e.city order by e.start_date;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ',u.city=e.city order by e.start_date' at line 1
+mysql> select u.users_id,u.full_name,e.event_id,e.title from users u join events e on u.user_id=e.organizer_id where e.status='upcoming' and u.city=e.city order by e.start_date;
+ERROR 1054 (42S22): Unknown column 'u.users_id' in 'field list'
+mysql> select u.user_id,u.full_name,e.event_id,e.title from users u join events e on u.user_id=e.organizer_id where e.status='upcoming' and u.city=e.city order by e.start_date;
++---------+---------------+----------+-------------------------------+
+| user_id | full_name     | event_id | title                         |
++---------+---------------+----------+-------------------------------+
+|       1 | Alice Johnson |        1 | Tech Innovators Meetup        |
+|       2 | Bob Smith     |        3 | Frontend Development Bootcamp |
++---------+---------------+----------+-------------------------------+
+2 rows in set (0.00 sec)
+
+mysql> SELECT u.user_id,
+    ->        u.full_name,
+    ->        e.event_id,
+    ->        e.title,
+    ->        e.start_date
+    -> FROM Users u
+    -> JOIN Registrations r ON u.user_id = r.user_id
+    -> JOIN Events e ON r.event_id = e.event_id
+    -> WHERE e.status = 'upcoming'
+    ->   AND u.city = e.city
+    -> ORDER BY e.start_date;
++---------+---------------+----------+-------------------------------+---------------------+
+| user_id | full_name     | event_id | title                         | start_date          |
++---------+---------------+----------+-------------------------------+---------------------+
+|       1 | Alice Johnson |        1 | Tech Innovators Meetup        | 2025-06-10 10:00:00 |
+|       5 | Ethan Hunt    |        3 | Frontend Development Bootcamp | 2025-07-01 10:00:00 |
++---------+---------------+----------+-------------------------------+---------------------+
+2 rows in set (0.00 sec)
+
+mysql> select e.event_id,e.description ,f.feedback from events e join feedback f where f.rating=max(f.rating) and count(feedback_id)>=10;
+ERROR 1054 (42S22): Unknown column 'f.feedback' in 'field list'
+mysql> select e.event_id,e.description ,f.rating from events e join feedback f where f.rating=max(f.rating) and count(feedback_id)>=10;
+ERROR 1111 (HY000): Invalid use of group function
+mysql> SELECT
+    ->     e.event_id,
+    ->     e.description,
+    ->     AVG(f.rating) AS avg_rating,
+    ->     COUNT(f.feedback_id) AS total_feedbacks
+    -> FROM Events e
+    -> JOIN Feedback f
+    ->     ON e.event_id = f.event_id
+    -> GROUP BY e.event_id, e.description
+    -> HAVING COUNT(f.feedback_id) >= 10
+    ->
+    -> ;
+Empty set (0.01 sec)
+
+mysql> select e.event_id from events e join feedback f on e.events_id=f.event^Z^Z^C
+mysql> select * from events e left join sessions s on e.event_id=s.event_id where session_id null;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'null' at line 1
+mysql> select * from events e left join sessions s on e.event_id=s.event_id where session_id is null;
+Empty set (0.04 sec)
+
+mysql> SELECT
+    ->     e.event_id,
+    ->     e.title,
+    ->     AVG(TIMESTAMPDIFF(MINUTE, s.start_time, s.end_time)) AS avg_session_duration_minutes
+    -> FROM Events e
+    -> JOIN Sessions s
+    ->     ON e.event_id = s.event_id
+    -> GROUP BY e.event_id, e.title;
++----------+-------------------------------+------------------------------+
+| event_id | title                         | avg_session_duration_minutes |
++----------+-------------------------------+------------------------------+
+|        1 | Tech Innovators Meetup        |                      67.5000 |
+|        2 | AI & ML Conference            |                      90.0000 |
+|        3 | Frontend Development Bootcamp |                     120.0000 |
++----------+-------------------------------+------------------------------+
+3 rows in set (0.03 sec)
+
+mysql> select user_id from registration group by user_id having count(*)>=1;
+ERROR 1146 (42S02): Table 'clg.registration' doesn't exist
+mysql> SELECT
+    ->     user_id,
+    ->     event_id,
+    ->     COUNT(*) AS registration_count
+    -> FROM Registrations
+    -> GROUP BY user_id, event_id
+    -> ;
++---------+----------+--------------------+
+| user_id | event_id | registration_count |
++---------+----------+--------------------+
+|       1 |        1 |                  1 |
+|       2 |        1 |                  1 |
+|       3 |        2 |                  1 |
+|       4 |        2 |                  1 |
+|       5 |        3 |                  1 |
++---------+----------+--------------------+
+5 rows in set (0.00 sec)
+
+mysql> SELECT user_id from registrations group by user_id having count(*)>1;
+Empty set (0.00 sec)
+
+mysql> ^A     
